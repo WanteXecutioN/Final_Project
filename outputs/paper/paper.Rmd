@@ -1,102 +1,386 @@
 ---
 title: "My title"
 subtitle: "My subtitle if needed"
-author: 
-  - First author
-  - Another author
+author:"Swarnadeep Chattopadhyay" 
 thanks: "Code and data are available at: https://github.com/WanteXecutioN/Final_Project."
 date: "`r format(Sys.time(), '%d %B %Y')`"
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "The recent developments of the COVID-19 pandemic has had a tremendous impact on the world. Albeit school, work or daily life, there has been changes to the way that we conduct our daily lives. While a lot has changed, the intensity of the major soccer competitions all around the world has not. With teams playing on a regular schedule with advanced COVID protocols, we wanted to assess if teams in the English Premier League have been severely impacted by the change in environment. This report investigates the impact of COVID from the standpoint of team wins and team engagement in the English Premier League(EPL)."
 output:
   bookdown::pdf_document2
 toc: FALSE
 bibliography: references.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+\tableofcontents
+\normalsize
+\break
 
+
+```{r,echo=FALSE, include=FALSE}
 library(tidyverse)
-library(palmerpenguins)
+library(grid)
+library(gridExtra)
+library(hrbrthemes)
+library(fitdistrplus)
+library(readxl)
+library(rms)
 ```
 
-# Introduction
-
-You can and should cross-reference sections and sub-sections. For instance, Section \@ref(data). R Markdown automatically makes the sections lower case and adds a dash to spaces to generate labels, for instance, Section \@ref(first-discussion-point). 
-
+# 1 Introduction
+The English Premier League is renowned to be one of the most watched soccer leagues in the world. To date, the league is broadcasted in over 200 countries which spans over 4 billion people (Richard,2020). With such a large market, teams in the EPL are continually able to attract some of the best players in the world. This is pivotal because, not only will the league be attracting more engagement, but the level of competition will be more intense. At the start of 2020, the COVID-19 pandemic has halted a lot of major activities around the world. With the virus spreading quick, the organizers of the EPL halted premier league football between March to April. After the initial suspension of games, teams were allowed to play again but with no attendance and stricter protocols. As a group, we chanced upon an article on ESPN, that essentially highlights the loss of home advantage arising from games with no fans. Pivotally, they pointed out that Liverpool, who were the previous season winners, had lost 3 games at home during the COVID era. Prior to that, they were on a 68 games win streak at home (Hamilton, 2021). 
 
 
-# Data
+# 2 Scope of the Report
+We wanted to assess what we deem here, as the "COVID Effect", while builds on the fundamental impact that COVID has had on teams in the EPL. With that, our research questions are: 
 
-Our data is of penguins (Figure \@ref(fig:bills)).
+      1) How has the pandemic affected team wins for English Premier League teams?
+      2) How has the pandemic affected Twitter engagements for Manchester United?
 
-```{r bills, fig.cap="Bills of penguins", echo = FALSE}
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = FALSE) +
+Central to this investigation, we have chosen to use Manchester United because they are to date, the 4th most valuable club in the world at US$4.2 Billion. In the EPL, they are currently the most valuable club. A big part of the reason behind this valuation is, in the early 2000's, Manchester United had been one of the most dominant teams in the EPL, consistently ranking 1st in the league. In that time span, they have generated a large following in person and on social media. 
+
+# 3   Exploratory Data Analysis
+This investigation will consist of 5 data sets and focus on teams in Premier League (in England). To assess the first question, we will be working with data sets 1-2. For reference, the 2019/2020 season will be associated with Pre-Covid period and 2020/2021 season will be associated with COVID period and the average season has 38 games.
+
+
+## 3.1 Team Wins Data Analysis (1st Question)
+```{r, echo=FALSE, results='hide'}
+## Data from the Premier League in the 2019/2020 and 2020/2021 Season
+early <- read.csv("C:/Users/dylan/OneDrive/Desktop/1920.csv")
+later <- read.csv("C:/Users/dylan/OneDrive/Desktop/2021.csv")
+summary(early)
+summary(later)
+```
+```{r,echo=FALSE, results='hide'}
+## Assigning attendance according to 1st and 3rd quartile. 
+early %>% mutate(attendance = case_when(Attendance <= 21755 ~ 'Low',
+                                      Attendance > 21756 & Attendance <= 38312 ~ 'Medium',
+                                      Attendance > 38400 ~ 'High')) %>% mutate(prop= W/MP) -> early1
+
+## Classification of attendance according to no fans and some fans
+later %>% mutate(attendance1 = case_when(Attendance == 0 ~ 'None',
+                                      Attendance > 0 ~ 'Yes')) %>% mutate(prop=W/MP) -> later1
+```
+
+On initial observation, both data sets consists of 20 teams and 15 variables. Some key observations from the 2019/2020 season, the average goals scored by a premier league team playing at home is: 51.70 or 1.36 goals per game. With the 1.36 goals per game, the average number of wins stands at 14 which constitutes a 37% win rate (not very good). Mean attendance for all 20 teams is: 29796. 
+
+With the 2020/2021 season, the average goals scored by home team stands is: 38 goals or 1.31 goal per game. With the 1.31 goal per game, the average number of wins is 38%! Mean attendance in the 2020/2021 season stands at a mere 82.
+Note here that, the 2020/2021 season is not finished, the average wins and average goals were computed over 29 games. 
+
+Initial comparison, in spite of the discrepancy in the unequal number of games, there are two observations to point out: 
+
+1) The win rate in the 2020/2021 season has improved by 1% from 37% to 38%.
+2) The goals scored per game by home team has decreased by 0.05 from 1.36 to 1.31
+
+A 99.7% decrease in attendance has attributed to a 1% increase in team wins but a 0.05 decrease in goals scored per game!
+
+In order to run a logistic regression, the response variable needs to be of value 0 <y<1. We need to obtain a new response variable consisting of Wins. To do so, we will create new variable: Prop, which is the number of wins over matches played. Given that a team can't possibly win greater than 38 games, we are assured that our response will be less than 1. Another key change was to assign attendance according to: "High", "Medium" and "Low" which we have assigned according to the upper, median, and lower quantile of attendance variable. Same can be said for the 2020/2021, which we will assign "none" and "Yes" which by its name, represents teams with no fans and teams with some fans. 
+
+## 3.2 Twitter Engagement Analysis for Manchester United (2nd Question)
+
+```{r, echo=FALSE, results='hide'}
+## Undivided twitter data for Manchester United
+twitter_engagement <- read.csv("C:/Users/dylan/OneDrive/Desktop/Twitter-Engagement-Pre-PostCovid.csv",stringsAsFactors=FALSE)
+## Division 1: Pre Covid = July-Dec 2019 total engagements
+posts_2019 <- twitter_engagement %>% filter(Year.Month >= 2019, Year.Month < 2020)
+total_engagements_2019 <- posts_2019 %>% group_by(Year.Month) %>% summarise(Total.engagements=sum(Total.engagements))
+## Division 2: During COVID = Jan-June 2020 (2019/2020 Season)
+posts_JanJune2020 <- twitter_engagement %>% filter(Year.Month >= 2020)
+total_engagements_JanJune2020 <- posts_JanJune2020 %>% group_by(Year.Month) %>% summarise(Total.engagements=sum(Total.engagements))
+## Division 3: During COVID = July-December 2020 (2020/2021 season)
+twitter_postsJulyDec2020 <- read.csv("C:/Users/dylan/OneDrive/Desktop/Twitter-EngagementJuly-Dec2020.csv", stringsAsFactors=FALSE)
+twitter_postsJD2020 <- twitter_postsJulyDec2020 %>% filter(Year.Month < 2021)
+total_engagements_JulyDec2020 <- twitter_postsJD2020 %>% group_by(Year.Month) %>% summarise(Total.engagements=sum(Total.engagements))
+total_engagements_2019
+total_engagements_JanJune2020
+total_engagements_JulyDec2020
+```
+3rd data set is the twitter engagement data for Manchester United. To clear up the data to account for periods of COVID, we have divided the data set into 3.
+  
+    1) Pre Covid: July - December 2019
+    The month with the highest engagement was in December, which is 5,019,237. In retrospect, 
+    the month with the lowest engagement is in September, which is, 3,031,491.	
+    
+    2) During Covid from 2019/2020 season: Jan- June 2020 
+    The month with the highest engagement is June 2020 at 7,479,142. The low was during April
+    2020 at, 2,982,343
+    
+    3) During COVID from 2020/2021 season: July- December 2020
+    The month with the highest engagement is July 2020, at 9,546,656 with the low during 
+    November, at 4,908,278
+
+Within a year of the pandemic, there is a reasonable difference in the total engagements by month. Specifically, the highest total engagement by month has increased significantly by 90%. This statistic does make sense considering that a lot now EPL watcher's are working from home, this means that they have more freedom and time to engagement in various social media.
+
+# 4 Results and Methodology
+
+## 4.1 Methodology
+To answer the first question, we will aim to predict the expected wins of the teams using logistic regression. The dependent variable will be "prop" which is the proportion of Wins with respect to MP (formula = W/MP). The key differentiate of the two data set is trivially the huge loss of the fans, we want to include that as a key variable along with variables: GF, GA, Points + attendance. Here attendance is mutated to be categorical variables (low,medium and high) which we assigned according to the summary statistics (25%, 50%, 75%). On top of the regression, we will also use the Pythagorean formula to predict wins given the number of goals scored. By the end, we will assess the validity of both predictions. 
+
+For the second question, we will aim to assess the key variables affecting twitter engagement of the team. Here obviously, we regress with dependent variable being Total Engagements that is subdivided into each day of every month in the constituent periods listed in 3.2. And key independent variables being: Number of Posts , Month/Year , Day, Page Likes (number of page likes on a given day). For the bridge of the assignment, we will compute the summary wins for Manchester United from the 4th and 5th data set and create a data frame involving average engagement and average wins. This data frame allows us to create a visualization linking average wins to the average engagement.
+
+## 4.2 Aanlytic 1: Results from Team Wins affected by COVID
+
+```{r,echo=FALSE, warning=FALSE}
+## Regression Outputs for Pre COVID
+early1 %>% mutate(prop= W/MP) -> early1
+epl.1 <- glm(prop~ GF + GA +Pts + attendance, data=early1, family="binomial")
+## Mutating data to obtain expected wins for Pre COVID
+early1 %>% mutate(ExpectedWins = fitted(epl.1)) %>% mutate(MP= as.double(MP))-> early.fitted
+early.fitted <- early.fitted %>%
+  mutate(ExtraWins= prop - ExpectedWins) %>% mutate(EW = round(ExpectedWins*MP)) %>% mutate(diff = W - EW)
+head(early.fitted) 
+```
+
+```{r,echo=FALSE,warning=FALSE}
+## Regression Outputs for COVID 
+later1 %>% mutate(prop= W/MP) -> later1
+epl.2 <- glm(prop~ GF + GA + Pts + attendance1, data=later1 , family="binomial")
+## Mutating data to obtain expected wins for COVID
+later1 %>% mutate(ExpectedWins1 = fitted(epl.2)) -> later.fitted
+later.fitted1 <- later.fitted %>%
+  mutate(ExtraWins1= prop - ExpectedWins1) %>% mutate(EW = round(ExpectedWins1*MP)) %>% mutate(diff = W - EW) %>% mutate(PREDWIN = round(ExpectedWins1*38))
+head(later.fitted1)
+```
+```{r,echo=FALSE}
+early.fitted %>% group_by(attendance) %>% summarise(TW = sum(W)) -> m1
+later.fitted1 %>% group_by(attendance1) %>% summarise(TW = sum(W)) -> m2
+m1
+m2
+```
+We are working with the following logistic regression as follows:
+
+                                 prop ~ GF + GA + Pts + attendance
+
+Prop here represents the proportion of team wins with respect to total matches played by the team. 
+GF and GA represents the goals scored and conceded by the team
+Attendance here is a categorical variable that assigning, "High","Medium", "Low" according to the 25%,50% and 75% of variable attendance. Likewise is applied for the 2020/2021 season, where the only difference is that, "Yes" and "None" is applied to teams playing with fans and teams playing without fans in the stadium.
+
+Results from the regression output of the Pre COVID Data allows us to assess the predicted wins of each team in the EPL. Notably, we can see that Liverpool, ranked 1st, would have the highest predicted wins of 0.8288. The actual proportion of wins that Liverpool has is, 0.84 for a marginal difference of 0.0112. Using the predicted expected wins, we computed EW which represents the amount of predicted Wins the team would have at the end of the season (over 38 games). Computing the difference between actual wins and predicted wins at end of season shows, the difference is ranged to be -1 and 1. The regression fits relatively well. As for attendance, it can be seen that attendance does not have much of an impact on actual wins. Teams characterized with medium attendance had 60 more total wins that teams characterized in the high attendance.
+
+Results from the regression output of the COVID Data shows a compelling result.The current league leaders, Manchester City, would have the highest predicted win percentage of 76%. In retrospect, they had won 73% of their total games to date for a marginal difference of 3%. Similar to the 2019/2020 season, Manchester City, like Liverpool, would have a 1 more predicted win (over total matches played) than their actual wins to date. To add on, we predicted the number of games that each team would win at the end of the season. Manchester City is predicted to win 29 games over 38 games.Likewise for the COVID season, the attendance does not have a impact on the team wins. Teams characterized with some attendance, has 2 more wins than teams without any attendance.
+
+The major difference between the Pre COVID season and the COVID season shows that the current leaders would have a 7% drop in win. Over the 38 games, we predict the number of win proportions for the COVID season would be 76% as well for Manchester City. In a more notable difference, Liverpool only won 45% of their games to date in the current season. That is a 38% drop in wins for the previous season winners! For a team like Liverpool, the COVID effect with the lack of fans, has been significant. This supports the theory of ESPN as introduced in the introduction.
+
+
+### 4.2.1 Pythagorean Analysis
+```{r,echo=FALSE}
+##Predictions (Pythagorean) from the 19/20 season
+earlyf <- early.fitted %>% mutate(wpct= (GF)^2/((GF)^2+(GA)^2)) %>% mutate(expwin = round(wpct*as.double(MP))) %>% arrange(desc(expwin)) 
+bottomhalf <- earlyf %>% slice(10:20)
+upperhalf <- earlyf %>% slice(1:10)
+earlyf1 <- earlyf %>% slice(1:6)
+early12 <- earlyf %>% mutate(GF=GF+0.5) %>% mutate(GA=GA+0.5) 
+early1.2 <- fitdist(early12$GF, "weibull")
+##Mutating data to account for the weibull estimates
+early12 <- early12 %>% mutate(GFpg= GF/MP) %>% mutate(PPw = (2* GFpg)/2.951111)
+head(early12)
+``` 
+
+```{r,echo=FALSE,results='hide',warnings=FALSE}
+## Obtaining Weibull estimates
+library(fitdistrplus)
+later1 %>% mutate(WinPerc = (GF)^2/((GF)^2+(GA)^2)) -> later1
+later2 <- later1 %>% mutate(GF=GF+0.5) %>% mutate(GA=GA+0.5)
+later2.1 <- fitdist(later2$GF, "weibull")
+##Mutating data to account for the weibull estimates
+later2 %>% mutate(GFppg= GF/MP) %>% mutate(WinPP = (2* GFppg)/3.4029)-> later2
+later.fitted %>% mutate(MatchLeft = 38-MP) %>% 
+  mutate(PredWins = round(ExpectedWins1*MatchLeft)+W) -> later.fitted
+later.fitted %>% arrange(desc(PredWins)) %>% slice(1:6) -> latertest ##Prediction for the top 6 teams
+latertest
+```
+Noteworthy observations from the Pythagorean analysis:
+
+1) Based on goals scored by the home team, Manchester City would have won the 2019/2020 season 
+with a predicted 89% win rate vs the 68% ACTUAL win rate.
+
+2) In the 2020/2021 season, Manchester City would have a predicted win rate of 90% vs 
+their actual 73% win rate
+
+3) The pythagorean analysis shows major variance in the actual vs predicted and may not accurately 
+make for a good model.
+
+
+## Visual 1: A comparison between Pre COVID and During COVID Win Rates
+
+```{r,echo=FALSE}
+earlyfitted1 <- early.fitted %>% slice(1:6)
+later1 %>% slice(1:6) -> tt
+later.fitted2 <- later.fitted1 %>% slice(1:6)
+merge(earlyf1, earlyfitted1) -> merged 
+merge(tt, later.fitted2) -> merged1
+mergetest <- merge(merged, merged1, by="Squad")
+mergetest %>% subset(select=c("Squad","Rk.x", "MP.x", "W.x","prop.x","ExpectedWins","wpct","Rk.y","prop.y","WinPerc","ExpectedWins1")) -> mergetest
+mergetest %>% mutate(DiffR = ExpectedWins1-ExpectedWins) %>% mutate(DiffP = WinPerc-wpct) %>% mutate(ActualDiff= prop.y-prop.x) -> mergetest
+ggplot(mergetest, aes(Squad,DiffR,fill= ActualDiff,colour=ActualDiff)) + 
+  geom_bar(stat = 'identity', position = 'identity') +
+  coord_flip() +
   theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-Also bills and their average (Figure \@ref(fig:billssssss)). (Notice how you can change the height and width so they don't take the whole page?)
-
-```{r billssssss, fig.cap="More bills of penguins", echo = FALSE, fig.width=8, fig.height=4}
-
-# This needs to be about the random data tha tI sasmpled?
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = FALSE) +
+  guides(fill = 'none') +
+  xlab('') + ylab('Change in ExpectedWins PreCovid vs COVID') +
+  ggtitle("Regression Method") -> p1
+ggplot(mergetest, aes(Squad,DiffP,fill= ActualDiff,colour=ActualDiff)) + 
+  geom_bar(stat = 'identity', position = 'identity') +
+  coord_flip() +
   theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+  guides(fill = 'none') +
+  xlab('') + ylab('Change in ExpectedWins PreCovid vs COVID')+
+  ggtitle("Pythagorean Method")-> p2
+ggplot(mergetest, aes(Squad,ActualDiff,fill= ActualDiff,colour=ActualDiff)) + 
+  geom_bar(stat = 'identity', position = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  guides(fill = 'none') +
+  xlab('') + ylab('Change in ExpectedWins PreCovid vs COVID')+
+  ggtitle("Actual Change")-> p3
+grid.arrange(p1,p2,p3, nrow=3)
+```
+1) From Regression Method: 
+
+The useful information obtained from this plot shows that, majority of teams have actually improved during COVID.
+Of the same 5 teams that were sampled from two different seasons, 4 of the 5 teams have a higher predicted
+win percentage during COVID. Assessing for actual difference in the proportion of wins and predicted wins, 
+there is a consistency with the classification. Namely, the team with the highest change in predicted wins
+before and during COVID has the same highest actual difference in actual wins vs predicted wins
+
+2) From Pythagorean Method: 
+
+Shows that Chelsea would have the highest change in predicted wins. But the validity of this model is questioned 
+because the classification is not consistent. Namely, given Chelsea has the highest change in predicted wins, 
+they are supposed to have the highest actual difference. Yet, we actually see the opposite.
+
+3) From the actual change:
+
+We can formally observe that the regression method is preferred over the pythagorean method due to the 
+closeness in match in terms of change in expected wins and classification of actual difference in wins.
+
+## 4.3 Analytic 2: Twitter Engagement
+
+### 4.3.1 Pre Covid Engagement
+```{r,echo=FALSE}
+posts_2019 <- twitter_engagement %>% filter(Year.Month >= 2019, Year.Month < 2020)
+## REGRESSION FOR PREDICTING PRE COVID 2019/2020 SEASON
+t1 <- lm(Engagements.per.post~  Year.Month + Week.Day + Page.Likes, data= posts_2019)
+## REGRESSION FOR PREDICTING DURING COVID 2019/2020 SEASON
+t2 <- lm(Engagements.per.post ~ Year.Month + Week.Day + Page.Likes, data= posts_JanJune2020)
+## Manchester United Team Data
+PRECOVID <- read.csv("C:/Users/dylan/OneDrive/Desktop/wins1920.csv", stringsAsFactors=FALSE)
+PRECOVID %>% filter(Attendance>0) %>% filter(Comp == "Premier League") -> MU1
+## Obtains summary of average engagements
+MU1e <- posts_2019 %>% 
+  group_by(Year.Month) %>% 
+  summarise(total = 
+sum(Total.engagements), num.posts=n(),averageEng=total/num.posts) %>% slice(2:6)
+## Obtains the average Wins
+MU11 <- MU1 %>% 
+  group_by(Year.Month) %>% 
+  summarise(TotalW = sum(Result=="W"), ngames = n(), averageW = round(TotalW/ngames,2)) %>% slice(1:5)
+## Creates the data frame required for comparison
+Year.Month <- c("2019-08", "2019-09", "2019-10", "2019-11", "2019-12")
+AverageEngagements <- c(174896, 101050, 108980, 112641, 161911)
+AverageWins <- c(0.25, 0.33, 0.33,0.33, 0.57)
+MUd <- data.frame(Year.Month, AverageEngagements, AverageWins)
+MUd 
 ```
 
-Talk way more about it. 
+Here the regression that we are interested in is: 
+
+                  Engagements.per.post ~ Year.Month + Week.Day + Page.Likes
+
+Engagements per post is intuitively the engagements over the number of posts per month made by Manchester United on Twitter. Year.Month represents the month and year respectively and page likes, essentially represents the number of twitter page likes that Manchester United have on a certain day. 
+
+Noted here, we create a data frame that represents the Average Engagements (per post) and the Average Actual Wins for each level of engagement. There is no clear indication that a higher average engagement will result in an increase in the average wins for Manchester United. Evidently, when the Average Engagements was at its highest (174896), the average wins for that month was 0.25 or 25%. 
+
+### 4.3.2 During COVID Engagement
+```{r,echo=FALSE}
+## REGRESSION FOR PREDICTING ENGAGEMENT PER POST in 2020/2021 SEASON (DURING COVID)
+t3 <- lm(Engagements.per.post~ Year.Month + Week.Day + Page.Likes, data= twitter_postsJulyDec2020)
+## Reads in the current season's data for Manchester United
+comp <- read.csv("C:/Users/dylan/OneDrive/Desktop/comp.csv",stringsAsFactors=FALSE) %>% filter(Comp =="Premier League")
+## Obtains the Average Engagement for this season
+MU1p <- twitter_postsJulyDec2020 %>% 
+  group_by(Year.Month) %>% 
+  summarise(totalw = 
+sum(Total.engagements), numposts=n(),averageE=totalw/numposts) %>% slice(3:9)
+## Summary by Average Wins
+MU22 <- comp %>% 
+  group_by(Year.Month) %>% 
+  summarise(TotalWi = sum(Result=="W"), nugames = n(), averageWi = TotalWi/nugames) %>% slice(2:8)
+## Creation of data frame 
+Year.Month <- c("2020-09", "2020-10", "2020-11", "2020-12", "2021-01", "2021-02", "2021-03")
+AverageEngagementsCOVID <- c(214998, 279741, 163609, 205917, 281107, 231911, 182677)
+AverageWinsCOVID <- c(0.5, 0.33, 1,0.67, 0.50,0.40,0.67)
+MUCOVID <- data.frame(Year.Month, AverageEngagementsCOVID, AverageWinsCOVID)
+MUCOVID
+```
+A similar tale. The number of average engagements on Twitter (per post) has no real effect on the average wins. Manchester United had the highest average wins (100%) when the average engagement was the lowest (163609). To support, when average engagements was the highest at 281107, the average wins was only 0.50 (50%)
+
+### 4.3.3 Difference in Average Engagements vs Predicted Engagement
+```{r,echo=FALSE}
+## OBTAINS DATA FRAME REQUIRED FOR COMPARISON
+MUd %>% slice(2:5) -> MUd
+MUCOVID %>% slice(1:4) -> MUCOVID
+Month <- c("September", "October", "November", "December")
+ChangeInEngagements <- c(113948, 170761, 50968, 44006)
+ChangeInWinsPerc <- c(0.17, 0,0.67,0.1)
+ChangeDataFrame <- data.frame(Month, ChangeInEngagements, ChangeInWinsPerc)
+twitter_postsJulyDec2020 %>% mutate(ExpectedEngPerPost = round(fitted(t3),2)) %>% mutate(ExtraEngPerPost = Engagements.per.post-ExpectedEngPerPost) -> twit
+twit %>% group_by(Year.Month) %>% summarise(TotalEPP = sum(ExpectedEngPerPost), count=n(), AVG = TotalEPP/count) -> twit1
+twit1 %>% slice(3:6) -> twit1
+posts_2019 %>% mutate(EEPP = round(fitted(t1),2)) %>% mutate(ExTPP = Engagements.per.post-EEPP) -> twitprecovid
+twitprecovid %>% group_by(Year.Month) %>% summarise(TEPP = sum(EEPP), count=n(), AVGE= TEPP/count) -> twit2 
+twit2 %>% slice(3:6) -> twit2
+Months <- c("September","October","November","December")
+ACT <- c(113948,170761,50968,44006)
+data.frame(Months,ACT, cbind(twit1,twit2)) -> Df 
+Df %>% mutate(DiffAVG = AVG-AVGE) %>% mutate(OFF = ACT-DiffAVG) -> Df
+Df
+```
+The main points from this comparison is to observe the predicted engagement per post vs the actual engagement per post. Here AVG, represents the predicted engagement per post during COVID and AVGE represents the predicted engagement per post PRE COVID. If we observe the extra engagement, the OFF column suggests that a very high deviance between the predicted engagement and actual engagement. We would expect to see some deviance in the plot. 
 
 
+## 4.4 Visual 2: Change in Engagement vs Change in Actual Win%
+```{r,echo=FALSE}
+ggplot(Df, aes(Months,OFF,fill=ACT ,colour=ACT)) + 
+  geom_bar(stat = 'identity', position = 'identity') +
+  coord_flip() +
+  theme_minimal() +
+  guides(fill = 'none') +
+  xlab('') + ylab('Difference between Actual Engagement vs Predicted Engagement')+
+  ggtitle("Pre vs During COVID changes in Actual vs Predicted Engagement") -> gg
+ggplot(ChangeDataFrame, aes(x=ChangeInEngagements)) + geom_line(aes(y=ChangeInWinsPerc),color="red") + geom_text(aes(y=0.67,x=58000),label = "Peak") + geom_text(aes(y=0.05, x=171000), label="Worst")+ ggtitle("Pre vs During COVID changes in Actual Win% given Changes in Engagement") -> ggwp
+grid.arrange(gg,ggwp, nrow=2)
+```
 
-# Model
+Here, when we refer to change in Win Percentage, a baseline would be:
+    a) If the Change In Win Percentage > 0, the team has improved during COVID
+    b) If change in Win percentage < 0, the team has NOT improved during COVID
 
-\begin{equation}
-Pr(\theta | y) = \frac{Pr(y | \theta) Pr(\theta)}{Pr(y)}  (\#eq:bayes)
-\end{equation}
+Key Interpretations from this plot:    
 
-Equation \@ref(eq:bayes) seems useful, eh?
+1) Manchester United were actually predicted to have more engagements (per post) than actual engagements (per post) in October. In the other months, this was the opposite.
 
-Here's a dumb example of how to use some references: In paper we run our analysis in `R` [@citeR]. We also use the `tidyverse` which was written by @thereferencecanbewhatever If we were interested in baseball data then @citeLahman could be useful. 
+2) When Manchester United Observed their lowest change in engagements(per post) they actually had a 67% change in win rate in that given month.  Similarly, it can be said that when Manchester United had the biggest change in engagements (per post), they performed really poorly with a 0% change in win percentage.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+3) Conclusion, while there has been increase in engagement, the increased engagement in Twitter does not necessarily 
+correlate to more wins. This implies that the physical presence of the fans actually have a impact!
 
+# 5 Conclusion
+The premise of this paper was to:
+1) investigate the effect of COVID on team wins in the EPL
+2) investigate the effect of COVID on team engagement (MANCHESTER UNITED) in the EPL
 
-# Results
+From the results obtained, we assessed that the effect of COVID was significant for some teams in the EPL.
+Namely, the first observation was that the change in expected win% from the two periods was 7% between the leaders from both seasons. From classifying attendance into "High", "Medium" and "Low", it can be seen that teams classified with medium attendance did much better than teams with high attendance. Trivially, the 'COVID EFFECT' was most significant with Liverpool, who had a 38% drop in expected win percentage between the two seasons.
 
-# Discussion
+From the twitter engagement, it can be seen clearly that there is no clear association between the change in engagement with the team performance in terms of wins. Our evidence shows that, when Manchester United had the highest change in positive engagement in twitter, their team performance had not improved (0% change). But when the team had the lowest change in positive engagement, the team had had 67% change in wins between seasons.
 
-## First discussion point
+Future improvements to the model: 
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+1) Do a full model building assessing for the factors that actually affect the team wins/team engagements
 
-## Second discussion point
+2) Assess the model diagnostics for influential points
 
-## Third discussion point
-
-## Weaknesses and next steps
-
-Weaknesses and next steps should also be included.
-
-\newpage
-
-\appendix
-
-# Appendix {-}
-
-
-# Additional details
+3) Having full data from the 2020/2021 season to assess a fair comparison between seasons.
 
 
 \newpage
