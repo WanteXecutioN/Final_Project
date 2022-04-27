@@ -3,7 +3,7 @@ title: "Investigating the impacts of COVID-19 on team wins and social media enga
 author: "Swarnadeep Chattopadhyay" 
 thanks: "Code and data are available at: https://github.com/WanteXecutioN/Final_Project."
 date: "`r format(Sys.time(), '%d %B %Y')`"
-abstract: "The recent developments of the COVID-19 pandemic has had a tremendous impact on the world. Albeit school, work or daily life, there has been changes to the way that we conduct our daily lives. While a lot has changed, the intensity of the major soccer competitions all around the world has not. With teams playing on a regular schedule with advanced COVID protocols, we wanted to assess if teams in the English Premier League have been severely impacted by the change in environment. This report investigates the impact of COVID from the standpoint of team wins and team engagement in the English Premier League(EPL) and uses Manchester United which is a club playing the league to prove the point. @citeR is the software used to perform this analysis. "
+abstract: "The recent developments of the COVID-19 pandemic has had a tremendous impact on the world. Albeit school, work or daily life, there has been changes to the way that we conduct our daily lives. While a lot has changed, the intensity of the major soccer competitions all around the world has not. With teams playing on a regular schedule with advanced COVID protocols, we wanted to assess if teams in the English Premier League have been severely impacted by the change in environment. This report investigates the impact of COVID from the standpoint of team wins and team engagement in the English Premier League(EPL) and uses Manchester United which is a club playing the league to prove the point. Proving this would indicate the effect this pandamic has all over the world in the sports industry.  @citeR is the software used to perform this analysis. "
 output:
   bookdown::pdf_document2
 toc: FALSE
@@ -11,7 +11,6 @@ bibliography: references.bib
 ---
 
 \tableofcontents
-\normalsize
 
 
 ```{r,echo=FALSE, include=FALSE}
@@ -25,7 +24,11 @@ library(rms)
 ```
 
 # Introduction
-The English Premier League is renowned to be one of the most watched soccer leagues in the world. To date, the league is broadcasted in over 200 countries which spans over 4 billion people (@citeRichards). With such a large market, teams in the EPL are continually able to attract some of the best players in the world. This is pivotal because, not only will the league be attracting more engagement, but the level of competition will be more intense. At the start of 2020, the COVID-19 pandemic had halted a lot of major activities around the world. With the virus spreading quick, the organizers of the EPL halted the premier league football between March to June. After the initial suspension of the games, teams were allowed to play again but behind closed doors meaning no attendance and stricter protocols. We chanced upon an article on ESPN, that essentially highlights the loss of home advantage arising from games with no fans. Pivotally, they pointed out that Liverpool, who were the 2019-2020 season winners, had lost 6 games at home during the COVID era. Prior to that, they were on a 68 games win streak at home (@citeHamilton). We use @citetidyverse, @citegridExtra, @citehrbrthemes, @citefitdistrplus, @citereadxl and @citerms to prove how Covid has affected teams in the EPL both on and off the field. 
+The English Premier League is renowned to be one of the most watched soccer leagues in the world. To date, the league is broadcasted in over 200 countries which spans over 4 billion people (@citeRichards). With such a large market, teams in the EPL are continually able to attract some of the best players in the world. This is pivotal because, not only will the league be attracting more engagement, but the level of competition will be more intense. At the start of 2020, the COVID-19 pandemic had halted a lot of major activities around the world. With the virus spreading quick, the organizers of the EPL halted the premier league football between March to June. After the initial suspension of the games, teams were allowed to play again but behind closed doors meaning no attendance and stricter protocols. We chanced upon an article on ESPN, that essentially highlights the loss of home advantage arising from games with no fans. Pivotally, they pointed out that Liverpool, who were the 2019-2020 season winners, had lost 6 games at home during the COVID era. Prior to that, they were on a 68 games win streak at home (@citeHamilton). We use @citetidyverse, @citegridExtra, @citehrbrthemes, @citefitdistrplus, @citereadxl and @citerms to prove how Covid has affected teams in the EPL both on and off the field.With the help of @citeknitr, this paper was made possible to print in a pdf format.
+
+The paper looks to compare the effect fans had when describing team's win and as the statistic proves that there is a difference. We can see clearly from the table how Liverpool were champions in 2019-2020 season with 99 points while in the 2020-2021 season, Liverpool finished in 3rd place with 69 points. That shows a 30 point gaps. Although we are not looking at Liverpool, they are a perfect example of how Covid has affected their performances without fans. In regards to how Covid has affected Twitter Engagement for Manchester United, the highest total engagement by month has increased by 90% from a number of roughly 5 million to 9.5 million. Although twitter engagement has nothing to do with the team's performance, it is still interesting how fans are finding different ways to support their team during tough times. As majority of the people were working from home, the high engagement is justified.
+
+The paper goes on to give explanations using graphs and tables in order to provide visuals and prove the negative/positive effects done in the football(soccer) industry by Covid. The paper concludes by answering the 2 key research questions that we look for answers in the next section.
 
 
 # Scope of the Report
@@ -38,7 +41,7 @@ Central to this investigation, we have chosen to use Manchester United because t
 
 # Data Collection
 
-In terms of collecting the data, there were numerous websites used to conduct this paper. Firstly, the 2019-2020 season data was generated from @cite19-20. 
+In terms of collecting the data, there were numerous websites used to conduct this paper. Firstly, the 2019-2020 season data was generated from @cite19-20. This site also provided the season data for the 2020-2021 season using @cite20-21. Regarding Manchester United, @citeUnited1920 was used to generate their stats for the 2019-2020 season. Looking at the 2020-2021 season, @citeUnited2021 was used. As seen, fbref is a great website that has all the stats regarding the season or even clubs playing in the PL. This made collecting the data easier. In terms of getting the data for the section on twitter engagements, @citeFootball was used. One needs to create an account to be able to access all the statistics needed. Downloading these data sets from the mentioned sites would be enough to conduct this paper.     
 
 # Exploratory Data Analysis
 This investigation will consist of 5 data sets and focus on teams in Premier League (in England). To assess the first question, we will be working with data sets 1-2. For reference, the 2019/2020 season will be associated with Pre-Covid period and 2020/2021 season will be associated with COVID period and the average season has 38 games.
@@ -63,19 +66,19 @@ later %>% mutate(attendance1 = case_when(Attendance < 250 ~ 'Very Few',
                                       Attendance > 250 ~ 'Some')) %>% mutate(prop=W/MP) -> later1
 ```
 
-On initial observation, both data sets consists of 20 teams and 15 variables. Some key observations from the 2019/2020 season, the average goals scored by a premier league team playing at home is: 51.70 or 1.36 goals per game. With the 1.36 goals per game, the average number of wins stands at 14 which constitutes a 37% win rate (not very good). Mean attendance for all 20 teams is: 29796. 
+On initial observation, both data sets consists of 20 teams and 15 variables. Some key observations from the 2019/2020 season, the average goals scored by a premier league team is: 51.70 or 1.36 goals per game over the course of 38 games. With the 1.36 goals per game, the average number of wins stands at 14.4 which constitutes roughly 38% win rate (not very good). Mean attendance for all 20 teams is: 29796. 
 
-With the 2020/2021 season, the average goals scored by home team stands is: 38 goals or 1.31 goal per game. With the 1.31 goal per game, the average number of wins is 38%! Mean attendance in the 2020/2021 season stands at a mere 82.
-Note here that, the 2020/2021 season is not finished, the average wins and average goals were computed over 29 games. (Change)
+With the 2020/2021 season, the average goals scored by home team stands is: 51.2 goals or 1.35 goal per game over the course of 38 games. With the 1.35 goals per game, the average number of wins stands at 14.85 which constitutes to roughly 39% win rate. Mean attendance in the 2020/2021 season stands at a mere 462.1.
+Note here that, the 2020/2021 season was played behind closed doors with some fans allowed when the situation got better.
 
-Initial comparison, in spite of the discrepancy in the unequal number of games, there are two observations to point out: 
+Initial comparison, looking after 38 games played in both the seasons, there are two observations to point out: 
 
-1) The win rate in the 2020/2021 season has improved by 1% from 37% to 38%.
-2) The goals scored per game by home team has decreased by 0.05 from 1.36 to 1.31
+1) The win rate in the 2020/2021 season has improved by 1% from 38% to 39%.
+2) The goals scored per game by a PL has decreased by 0.01 from 1.36 to 1.35.
 
-A 99.7% decrease in attendance has attributed to a 1% increase in team wins but a 0.05 decrease in goals scored per game!
+Roughly 64.5% decrease in attendance has attributed to a 1% increase in team wins but a 0.01 decrease in goals scored per game!
 
-In order to run a logistic regression, the response variable needs to be of value 0 <y<1. We need to obtain a new response variable consisting of Wins. To do so, we will create new variable: Prop, which is the number of wins over matches played. Given that a team can't possibly win greater than 38 games, we are assured that our response will be less than 1. Another key change was to assign attendance according to: "High", "Medium" and "Low" which we have assigned according to the upper, median, and lower quantile of attendance variable. Same can be said for the 2020/2021, which we will assign "none" and "Yes" which by its name, represents teams with no fans and teams with some fans. 
+In order to run a logistic regression, the response variable needs to be of value 0 <y<1. We need to obtain a new response variable consisting of Wins. To do so, we will create new variable: Prop, which is the number of wins over matches played. Given that a team can't possibly win greater than 38 games, we are assured that our response will be less than 1. Another key change was to assign attendance according to: "High", "Medium" and "Low" which we have assigned according to the upper, median, and lower quantile of attendance variable. Same can be said for the 2020/2021, which we will assign "Very few" and "Some" which by its name, represents teams with very few fans and teams with some fans. 
 
 ## Twitter Engagement Analysis for Manchester United (2nd Question)
 
@@ -96,7 +99,7 @@ total_engagements_2019
 total_engagements_JanJune2020
 total_engagements_JulyDec2020
 ```
-3rd data set is the twitter engagement data for Manchester United. To clear up the data to account for periods of COVID, we have divided the data set into 3.
+The 3rd data set is the twitter engagement data for Manchester United. To clear up the data to account for periods of COVID, we have divided the data set into 3.
   
     1) Pre Covid: July - December 2019
     The month with the highest engagement was in December, which is 5,019,237. In retrospect, 
@@ -110,7 +113,7 @@ total_engagements_JulyDec2020
     The month with the highest engagement is July 2020, at 9,546,656 with the low during 
     November, at 4,908,278
 
-Within a year of the pandemic, there is a reasonable difference in the total engagements by month. Specifically, the highest total engagement by month has increased significantly by 90%. This statistic does make sense considering that a lot now EPL watcher's are working from home, this means that they have more freedom and time to engagement in various social media.
+Within a year of the pandemic, there is a reasonable difference in the total engagements by month. Specifically, the highest total engagement by month has increased significantly by 90%. This statistic does make sense considering that a lot of EPL watcher's are working from home which means that they have more freedom and time to engagement in various social media.
 
 # Results and Methodology
 
@@ -154,13 +157,13 @@ We are working with the following logistic regression as follows:
 
 Prop here represents the proportion of team wins with respect to total matches played by the team. 
 GF and GA represents the goals scored and conceded by the team
-Attendance here is a categorical variable that assigning, "High","Medium", "Low" according to the 25%,50% and 75% of variable attendance. Likewise is applied for the 2020/2021 season, where the only difference is that, "Yes" and "None" is applied to teams playing with fans and teams playing without fans in the stadium.
+Attendance here is a categorical variable that assigning, "High","Medium", "Low" according to the 25%,50% and 75% of variable attendance. Likewise is applied for the 2020/2021 season, where the only difference is that, "Some" and "Very Few" is applied to teams playing with some fans and teams playing very few fans in the stadium.
 
 Results from the regression output of the Pre COVID Data allows us to assess the predicted wins of each team in the EPL. Notably, we can see that Liverpool, ranked 1st, would have the highest predicted wins of 0.8288. The actual proportion of wins that Liverpool has is, 0.84 for a marginal difference of 0.0112. Using the predicted expected wins, we computed EW which represents the amount of predicted Wins the team would have at the end of the season (over 38 games). Computing the difference between actual wins and predicted wins at end of season shows, the difference is ranged to be -1 and 1. The regression fits relatively well. As for attendance, it can be seen that attendance does not have much of an impact on actual wins. Teams characterized with medium attendance had 60 more total wins that teams characterized in the high attendance.
 
-Results from the regression output of the COVID Data shows a compelling result.The current league leaders, Manchester City, would have the highest predicted win percentage of 76%. In retrospect, they had won 73% of their total games to date for a marginal difference of 3%. Similar to the 2019/2020 season, Manchester City, like Liverpool, would have a 1 more predicted win (over total matches played) than their actual wins to date. To add on, we predicted the number of games that each team would win at the end of the season. Manchester City is predicted to win 29 games over 38 games.Likewise for the COVID season, the attendance does not have a impact on the team wins. Teams characterized with some attendance, has 2 more wins than teams without any attendance.
+Results from the regression output of the COVID Data shows a compelling result.The current league leaders, Manchester City, would have the highest predicted win percentage of 70%. In retrospect, they had won 71% of their total games for a marginal difference of 1%. Similar to the 2019/2020 season, Manchester City, like Liverpool, would have a 1 more predicted win (over total matches played) than their actual wins to date. To add on, we predicted the number of games that each team would win at the end of the season. Manchester City is predicted to win 27 games over 38 games.Likewise for the COVID season, the attendance does have an impact on the team wins. Teams characterized with some attendance, has 243 more wins than teams very few attendance.
 
-The major difference between the Pre COVID season and the COVID season shows that the current leaders would have a 7% drop in win. Over the 38 games, we predict the number of win proportions for the COVID season would be 76% as well for Manchester City. In a more notable difference, Liverpool only won 45% of their games to date in the current season. That is a 38% drop in wins for the previous season winners! For a team like Liverpool, the COVID effect with the lack of fans, has been significant. This supports the theory of ESPN as introduced in the introduction.
+The major difference between the Pre COVID season and the COVID season shows that the league leaders Liverpool had roughly a 31% drop in wins from 32 wins in the 2019-2020 season to 20 wins in the 2020-2021 season. In a notable difference, For a team like Liverpool, the COVID effect with the lack of fans, has been significant. This supports the theory of ESPN as introduced in the introduction.
 
 
 ### Pythagorean Analysis
@@ -195,10 +198,8 @@ Noteworthy observations from the Pythagorean analysis:
 1) Based on goals scored by the home team, Manchester City would have won the 2019/2020 season 
 with a predicted 89% win rate vs the 68% ACTUAL win rate.
 
-2) In the 2020/2021 season, Manchester City would have a predicted win rate of 90% vs 
-their actual 73% win rate
 
-3) The pythagorean analysis shows major variance in the actual vs predicted and may not accurately 
+2) The Pythagorean analysis shows major variance in the actual vs predicted and may not accurately 
 make for a good model.
 
 
@@ -246,13 +247,13 @@ before and during COVID has the same highest actual difference in actual wins vs
 
 2) From Pythagorean Method: 
 
-Shows that Chelsea would have the highest change in predicted wins. But the validity of this model is questioned 
+Shows that Chelsea would have had the highest change in predicted wins. But the validity of this model is questioned 
 because the classification is not consistent. Namely, given Chelsea has the highest change in predicted wins, 
 they are supposed to have the highest actual difference. Yet, we actually see the opposite.
 
 3) From the actual change:
 
-We can formally observe that the regression method is preferred over the pythagorean method due to the 
+We can formally observe that the regression method is preferred over the Pythagorean method due to the 
 closeness in match in terms of change in expected wins and classification of actual difference in wins.
 
 ## Analytic 2: Twitter Engagement
@@ -363,26 +364,30 @@ Key Interpretations from this plot:
 
 2) When Manchester United Observed their lowest change in engagements(per post) they actually had a 67% change in win rate in that given month.  Similarly, it can be said that when Manchester United had the biggest change in engagements (per post), they performed really poorly with a 0% change in win percentage.
 
-3) Conclusion, while there has been increase in engagement, the increased engagement in Twitter does not necessarily 
-correlate to more wins. This implies that the physical presence of the fans actually have a impact!
+3) While there has been increase in engagement, the increased engagement in Twitter does not necessarily 
+correlate to more wins. This implies that the physical presence of the fans actually have a impact.
 
 # Conclusion
 The premise of this paper was to:
 1) investigate the effect of COVID on team wins in the EPL
 2) investigate the effect of COVID on team engagement (MANCHESTER UNITED) in the EPL
 
-From the results obtained, we assessed that the effect of COVID was significant for some teams in the EPL.
-Namely, the first observation was that the change in expected win% from the two periods was 7% between the leaders from both seasons. From classifying attendance into "High", "Medium" and "Low", it can be seen that teams classified with medium attendance did much better than teams with high attendance. Trivially, the 'COVID EFFECT' was most significant with Liverpool, who had a 38% drop in expected win percentage between the two seasons.
+From the results obtained, we assessed that the effect of COVID was significant for some teams in the EPL. Particularly, Liverpool who had a -30 pts difference from the 2019-2020 season.
+Namely, the first observation was that the change in win % from 2019-2020 season was 31% decrease compared to the 2020-2021 season for Liverpool. From classifying attendance into "High", "Medium" and "Low", it can be seen that teams classified with medium attendance did much better than teams with high attendance. Trivially, the 'COVID EFFECT' was most significant with Liverpool, who had a 29% drop in expected win percentage between the two seasons.
 
 From the twitter engagement, it can be seen clearly that there is no clear association between the change in engagement with the team performance in terms of wins. Our evidence shows that, when Manchester United had the highest change in positive engagement in twitter, their team performance had not improved (0% change). But when the team had the lowest change in positive engagement, the team had had 67% change in wins between seasons.
 
-Future improvements to the model: 
+For Future improvements to the model, we must 
 
-1) Do a full model building assessing for the factors that actually affect the team wins/team engagements
+1) Do a full model building assessing for the factors that actually affect the team wins/team engagements.
 
-2) Assess the model diagnostics for influential points
+2) Assess the model diagnostics for influential points.
 
-3) Having full data from the 2020/2021 season to assess a fair comparison between seasons.
+3) Having a sub section of the data available between the year 2020-2021 where no fans showed up to the stadium.
+
+4) List of players who were not available to play matches due to Covid symptoms who could have played an important part for the team's win. 
+
+This paper shows how Covid played a negative role in some team's performance which is evident. As players were catching the symptoms, they had to be in isolation for 14 days which meant them missing key games. Getting access of that data would have helped understand why Liverpool went from winning the PL to 3rd place in the following season. Doing these will improve the results and provide a better solution to the question of why one team was affected more than the others.    
 
 
 \newpage
