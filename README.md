@@ -2,6 +2,16 @@
 
 This repo is about the how Covid-19 has affected the football(soccer) industry in terms of team wins and social media engagement.
 
+Note: In order to run the codes, all files are in the inputs under data folder. The path in order to read the Datas must be changed as I have them linked with my desktop so make sure to change the path before running the codes.
+
+The following code's paths need to be changed:
+1. early <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/1920.csv")
+2. later <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/2021.csv")
+3. twitter_engagement <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/Twitter-Engagement-Pre-PostCovid.csv",stringsAsFactors=FALSE)
+4. twitter_postsJulyDec2020 <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/Twitter-EngagementJuly-Dec2020.csv", stringsAsFactors=FALSE)
+5. PRECOVID <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/wins1920.csv", stringsAsFactors=FALSE)
+6. comp <- read.csv("C:/Users/deeps/Desktop/STA304 Final project/comp.csv",stringsAsFactors=FALSE) %>% filter(Comp =="Premier League")
+
 It is organised as follows:
 
 Abstract: Gives a general overview of the paper
